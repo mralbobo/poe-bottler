@@ -1,0 +1,5 @@
+/target
+.vscode
+*.json
+test.sh
+/conversion_schema.toml
