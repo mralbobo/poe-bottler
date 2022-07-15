@@ -22,7 +22,7 @@ pub enum PoeDefinition {
 }
 
 impl PoeConfig {
-    pub fn from_value(val: &serde_json::Value, schema: &ConversionSchema, index: usize) -> PoeConfig {
+    pub fn from_value(val: &serde_json::Value, schema: &ConversionSchema, index: usize) -> Result<PoeConfig, serde_json::Error> {
         //in initial cut:
         // - value is an item that contains the entire contents of a PoeConfig
 
@@ -32,7 +32,11 @@ impl PoeConfig {
         // let definition = grab_nested_val(val, &schema.definition);
         // println!("def: {:?}", definition);
 
-        let definition = grab_nested_map(val, &schema.definition);
+        // let definition = grab_nested_map(val, &schema.definition);
+        let definition =  match grab_nested_map(val, &schema.definition) {
+            Ok(def) => def,
+            Err(e) => return Err(e),
+        };
 
         let context = grab_nested_val_optional(val, schema.context.as_deref());
 
@@ -40,7 +44,7 @@ impl PoeConfig {
         let reference = grab_nested_val_optional(val, schema.reference.as_deref());
         let comment = grab_nested_val_optional(val, schema.commment.as_deref());
 
-        PoeConfig { term, definition, context, term_plural, reference, comment }
+        Ok(PoeConfig { term, definition, context, term_plural, reference, comment })
     }
 
     fn derive_term(val: &serde_json::Value, schema: &ConversionSchema, index: usize) -> Option<String> {

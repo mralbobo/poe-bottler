@@ -50,11 +50,16 @@ pub fn run() -> Result<(), Box<dyn Error>> {
 
 	let poed_list:Vec<PoeConfig> = base.iter()
 			.enumerate()
-			.map(|(i, item)| PoeConfig::from_value(item, &conversion_schema, i)).collect();
-
-	// let definition = PoeConfig::from_value(&base[0], &conversion_schema);
-
-	// println!("def of 0, {:#?}", poedList);
+			.filter_map(|(i, item)| {
+				match PoeConfig::from_value(item, &conversion_schema, i){
+					Ok(p) => Some(p),
+					Err(_e) => {
+						println!("Error parsing map or string on item number {}", i);
+						None
+					}
+				}
+			})
+			.collect();
 
 	// let file = File::create("test-output.json").unwrap();
 	let file = File::create(&cli_config.output).unwrap();

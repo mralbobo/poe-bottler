@@ -24,8 +24,6 @@ fn main() {
     poe_bottler::run().unwrap();
     //NEXT (unordered)
     // - got it functioning-ish
-    // - turn hard coded file references into cli args
-    // - unbreak the PoeConfig type to support maps as well at some point
     // - support Poe -> original file, probably using poe'd file, original file and schema as an input
     // - add groupBy support
     // - do proper error handling
