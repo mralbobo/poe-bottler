@@ -21,22 +21,24 @@ pub struct CliConfig {
 	pub output: String
 }
 
+//write back to original file
+// - read in original file as Value nonsense
+// - read in previously output file (a poe file) as list of PoeConfig's
+// - read in schema file
+// - name out output file (output file,s data will essentially be the original file)
+//method
+// - _may_ need some metadata stored in the output file (probably in derived term?), can get most from schema
 
 pub fn run() -> Result<(), Box<dyn Error>> {
 	let cli_config = CliConfig::parse();
 
-	// let s = read_from_file("seafloor_survey_01.json");
-	let s = read_from_file(&cli_config.input);
-	let random_json:serde_json::Value = serde_json::from_str(&s).unwrap();
-
-	// println!("{:#?}", randomJson);
-
-	// let s = read_from_file("conversion_schema.toml");
 	let s = read_from_file(&cli_config.schema);
-	let conversion_schema: ConversionSchema = toml::from_str(&s).unwrap();
+	let conversion_schema: ConversionSchema = toml::from_str(&s)?;
 
-	assert_eq!(conversion_schema.base_path, "Dialogue");
+	let s = read_from_file(&cli_config.input);
+	let random_json:serde_json::Value = serde_json::from_str(&s)?;
 
+	// TODO: in theory this should be updated to support both an array and a map
 	let base = &random_json[&conversion_schema.base_path];
 	assert!(base.is_array());
 
