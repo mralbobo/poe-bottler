@@ -1,17 +1,17 @@
 use std::collections::HashMap;
 
 use serde::{Serialize, Deserialize};
-use crate::{json_utils::{grab_nested_map, grab_nested_val_optional}, conversion_schema::ConversionSchema};
+use crate::{json_utils::{grab_nested_map, grab_nested_val_optional, grab_nested_value_mut}, conversion_schema::ConversionSchema};
 
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct PoeConfig {
-    term: String,
-    definition: PoeDefinition,
-    context: Option<String>,
-    term_plural: Option<String>,
-    reference: Option<String>,
-    comment: Option<String>
+    pub term: String,
+    pub definition: PoeDefinition,
+    pub context: Option<String>,
+    pub term_plural: Option<String>,
+    pub reference: Option<String>,
+    pub comment: Option<String>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -52,10 +52,33 @@ impl PoeConfig {
         let should_derive_term = schema.derive_term;
 
         if should_derive_term {
-            Some(format!("{}.{}", schema.base_path, index))
+            Some(format!("{}/{}", schema.base_path, index))
         }
         else {
             grab_nested_val_optional(val, schema.term.as_deref())
         }
+    }
+}
+
+// merge every property that's in both the poeDefintion and the schema to the orignal Value
+pub fn write_poe_to_value(value: &mut serde_json::Value, conversion_schema: &ConversionSchema, poe: PoeConfig) {
+
+    // reference to the object that contains all the poe relevant fields
+    let original_obj = grab_nested_value_mut(value, &poe.term);
+
+    // merge every property that's in both the poeDefintion and the schema to the orignal Value
+    original_obj[&conversion_schema.definition] = serde_json::to_value(poe.definition).unwrap();
+
+    if let Some(context) = &conversion_schema.context {
+        original_obj[context] = serde_json::to_value(poe.context).unwrap();
+    }
+    if let Some(term_plural) = &conversion_schema.term_plural {
+        original_obj[term_plural] = serde_json::to_value(poe.term_plural).unwrap();
+    }
+    if let Some(reference) = &conversion_schema.reference {
+        original_obj[reference] = serde_json::to_value(poe.reference).unwrap();
+    }
+    if let Some(commment) = &conversion_schema.commment {
+        original_obj[commment] = serde_json::to_value(poe.comment).unwrap();
     }
 }

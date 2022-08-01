@@ -17,6 +17,23 @@ run
 ./poe-bottler --input="input_file.json" --output="test-output.json" --schema="conversion_schema.toml"
 ```
 
+# Modes
+This script has two main modes, generating a poe compatible json, and taking a previously gerated file and writing it back to the original format. At some point this will be be defined but for now this is derived by the inputs provided.
+## Mode 1 - creating a poe json
+This is the normal mode
+```
+./poe-bottler --input="input_file.json" --output="test-output.json" --schema="conversion_schema.toml"
+```
+
+And will read a file from "input" and write it to the "output" path.
+
+## Mode 2 - back to original
+```
+./poe-bottler --input="input_file.json" --output="new-output.json" --poe-file="test-output.json" --schema="conversion_schema.toml"
+```
+
+This will read in your original input file as a source and read in a previously generated, and presumably translated poe file. Then output to the provided path.
+
 See `sample_files/conversion_schema.toml`
 
 
