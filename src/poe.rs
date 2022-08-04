@@ -64,7 +64,7 @@ impl PoeConfig {
 pub fn write_poe_to_value(value: &mut serde_json::Value, conversion_schema: &ConversionSchema, poe: PoeConfig) {
 
     // reference to the object that contains all the poe relevant fields
-    let original_obj = grab_nested_value_mut(value, &poe.term);
+    let original_obj = grab_nested_value_mut(value, &poe.term).unwrap();
 
     // merge every property that's in both the poeDefintion and the schema to the orignal Value
     original_obj[&conversion_schema.definition] = serde_json::to_value(poe.definition).unwrap();

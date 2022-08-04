@@ -8,15 +8,16 @@ pub fn grab_nested_value<'a>(val: &'a serde_json::Value, path: &str) -> &'a serd
 	})
 }
 
-pub fn grab_nested_value_mut<'a>(val: &'a mut serde_json::Value, path: &str) -> &'a mut serde_json::Value {
+pub fn grab_nested_value_mut<'a>(val: &'a mut serde_json::Value, path: &str) -> Option<&'a mut serde_json::Value> {
 	path.split('/')
-	.fold(val, |acc, item| {
-
+	.fold(Some(val), |acc, item| {
+			let acc = acc?;
+			
 			//convert to a number to index arrays if it's a number
 			//will technically prevent writing back to objects indexed by numbers
 			match item.parse::<usize>() {
-					Ok(num) => acc.get_mut(num).unwrap(),
-					__ => acc.get_mut(item).unwrap()
+					Ok(num) => acc.get_mut(num),
+					__ => acc.get_mut(item)
 			}
 	})
 }
