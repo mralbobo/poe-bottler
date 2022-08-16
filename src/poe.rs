@@ -27,7 +27,7 @@ impl PoeConfig {
         // - value is an item that contains the entire contents of a PoeConfig
 
         //special case
-        let term = PoeConfig::derive_term(val, schema, index).unwrap();
+        let term = PoeConfig::derive_term(schema, index).unwrap();
         // println!("def, {}", term);
         // let definition = grab_nested_val(val, &schema.definition);
         // println!("def: {:?}", definition);
@@ -47,21 +47,18 @@ impl PoeConfig {
         Ok(PoeConfig { term, definition, context, term_plural, reference, comment })
     }
 
-    fn derive_term(val: &serde_json::Value, schema: &ConversionSchema, index: usize) -> Option<String> {
-        // let should_derive_term = schema.deriveTerm.unwrap_or(false);
-        let should_derive_term = schema.derive_term;
-
-        if should_derive_term {
-            Some(format!("{}/{}", schema.base_path, index))
-        }
-        else {
-            grab_nested_val_optional(val, schema.term.as_deref())
-        }
+    fn derive_term(schema: &ConversionSchema, index: usize) -> Option<String> {
+        Some(format!("{}/{}", schema.base_path, index))
     }
 }
 
 // merge every property that's in both the poeDefintion and the schema to the orignal Value
 pub fn write_poe_to_value(value: &mut serde_json::Value, conversion_schema: &ConversionSchema, poe: PoeConfig) {
+
+    //design
+    // - if original_obj is not defined return an error
+    //   - alternate, create it?
+    // - if any of the merges fail, ignore and move on
 
     // reference to the object that contains all the poe relevant fields
     let original_obj = grab_nested_value_mut(value, &poe.term).unwrap();

@@ -1,11 +1,10 @@
 
 # enables deriving the term from the path. Uses a rudimentary base_path + array index
 # overrides the actual term setting below if set
-derive_term = true
+# derive_term = true #removed, incompatible with the reversal
 # all other paths start here
 base_path = "Dialogue"
 # everything below directly maps to poe config
-term = "Index"
 definition = "Text"
 context = "Name"
 term_plural = ""
